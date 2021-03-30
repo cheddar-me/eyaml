@@ -1,0 +1,43 @@
+GIT
+  remote: https://github.com/cheddar-me/ffi.git
+  revision: 6d091e74c04c4bae9680c47595d58e879469790c
+  branch: apple-m1
+  submodules: true
+  specs:
+    ffi (1.15.0)
+
+GIT
+  remote: https://github.com/cheddar-me/rbnacl.git
+  revision: 2958a3ca5c0c2a5deee80c4298b0dbea4d4a7432
+  branch: apple-m1
+  submodules: true
+  specs:
+    rbnacl (7.1.1)
+
+PATH
+  remote: .
+  specs:
+    eyaml (0.1.0)
+      thor (~> 1.1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    coderay (1.1.3)
+    method_source (1.0.0)
+    pry (0.14.0)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
+    thor (1.1.0)
+
+PLATFORMS
+  arm64-darwin-20
+
+DEPENDENCIES
+  eyaml!
+  ffi!
+  pry
+  rbnacl!
+
+BUNDLED WITH
+   2.2.15
