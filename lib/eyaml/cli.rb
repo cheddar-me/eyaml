@@ -1,6 +1,6 @@
 class EYAML
   class CLI < Thor
-    class_option :keydir, aliases: "-k", type: :string, default: ENV["EJSON_KEYDIR"] || EYAML::DEFAULT_KEYDIR, desc: "Directory containing EYAML keys"
+    class_option :keydir, aliases: "-k", type: :string, default: EYAML::DEFAULT_KEYDIR, desc: "Directory containing EYAML keys"
 
     method_option :json, type: :boolean, aliases: "-j", desc: "output will be formatted as JSON", default: false
     desc "encrypt", "(Re-)encrypt one or more EYAML files"

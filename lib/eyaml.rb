@@ -11,7 +11,7 @@ require "pry"
 
 class EYAML
   class Error < StandardError; end
-  DEFAULT_KEYDIR = "/opt/ejson/keys"
+  DEFAULT_KEYDIR = ENV["EJSON_KEYDIR"] || "/opt/ejson/keys"
   INTERNAL_PUB_KEY = "_public_key"
 
   class << self
@@ -56,7 +56,7 @@ class EYAML
 
     private
 
-    def load_private_key_from(public_key:, keydir: nil, private_key: nil)
+    def load_private_key_from(public_key:, keydir: DEFAULT_KEYDIR, private_key: nil)
       raise ArgumentError, "One of :keydir or :private_key must be set" if keydir.nil? && private_key.nil?
 
       return private_key unless private_key.nil?
