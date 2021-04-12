@@ -1,8 +1,9 @@
-class EYAML
+module EYAML
+  class InvalidFormatError < StandardError; end
+
   class CLI < Thor
     class_option :keydir, aliases: "-k", type: :string, default: EYAML::DEFAULT_KEYDIR, desc: "Directory containing EYAML keys"
 
-    method_option :json, type: :boolean, aliases: "-j", desc: "output will be formatted as JSON", default: false
     desc "encrypt", "(Re-)encrypt one or more EYAML files"
     def encrypt(*files)
       files.each do |file|
@@ -12,7 +13,7 @@ class EYAML
         bytes_written = EYAML.encrypt_file_in_place(
           file_path,
           keydir: options.fetch(:keydir),
-          output_format: (options.fetch(:json) ? :json : :yaml)
+          output_format: format_for_file(file_path)
         )
 
         puts "Wrote #{bytes_written} bytes to #{file_path}."
@@ -20,10 +21,15 @@ class EYAML
     end
 
     method_option :output, type: :string, desc: "print output to the provided file, rather than stdout", aliases: "-o"
-    method_option :json, type: :boolean, aliases: "-j", desc: "output will be formatted as JSON", default: false
     method_option :"key-from-stdin", type: :boolean, desc: "read the private key from STDIN", default: false
     desc "decrypt", "Decrypt an EYAML file"
     def decrypt(file)
+      file_path = Pathname.new(file)
+      unless file_path.exist?
+        puts "#{file} doesn't exist"
+        return
+      end
+
       key_options = if options.fetch(:"key-from-stdin")
         # Read key from STDIN
         {private_key: ARGF}
@@ -32,7 +38,7 @@ class EYAML
       end
 
       plaindata = EYAML.decrypt_file(file, **key_options)
-      eyaml = if options.fetch(:json)
+      eyaml = if format_for_file(file_path) == :json
         JSON.pretty_generate(plaindata)
       else
         EYAML::Util.pretty_yaml(plaindata)
@@ -56,7 +62,7 @@ class EYAML
         public_key_path = File.expand_path(public_key, options.fetch(:keydir))
 
         File.write(public_key_path, private_key)
-        puts "Public Key: #{public_key}"
+        puts public_key
       else
         puts "Public Key: #{public_key}"
         puts "Private Key: #{private_key}"
@@ -69,6 +75,19 @@ class EYAML
 
     def self.exit_on_failure?
       true
+    end
+
+    private
+
+    def format_for_file(file_path)
+      case File.extname(file_path)
+      when ".eyaml"
+        :yaml
+      when ".ejson"
+        :json
+      else
+        raise EYAML::InvalidFormatError, "Unsupported file type"
+      end
     end
   end
 end

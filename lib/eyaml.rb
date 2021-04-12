@@ -7,10 +7,7 @@ require "yaml"
 require "json"
 require "pathname"
 
-require "pry"
-
-class EYAML
-  class Error < StandardError; end
+module EYAML
   DEFAULT_KEYDIR = ENV["EJSON_KEYDIR"] || "/opt/ejson/keys"
   INTERNAL_PUB_KEY = "_public_key"
 

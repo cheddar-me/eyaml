@@ -1,10 +1,12 @@
-class EYAML
+module EYAML
+  class UnsupportedVersionError < StandardError; end
+
   class EncryptionManager
     FORMAT_REGEX = /\AEJ\[(?<version>[^:]+):(?<session_public_key>[^:]+):(?<nonce>[^:]+):(?<text>[^\]]+)\]\z/
     FORMAT_VERSION = "1"
 
     class << self
-      def generate_key
+      def new_keypair
         private_key = RbNaCl::PrivateKey.generate
 
         [
@@ -16,13 +18,8 @@ class EYAML
 
     def initialize(yaml, public_key, private_key)
       @tree = yaml
-      @public_key = public_key.encoding != Encoding::BINARY ? RbNaCl::Util.hex2bin(public_key)
-                                                            : public_key
-      @private_key = private_key.encoding != Encoding::BINARY ? RbNaCl::Util.hex2bin(private_key)
-                                                              : private_key
-
-      @session_private_key = RbNaCl::PrivateKey.generate
-      @session_public_key = @session_private_key.public_key
+      @public_key = EYAML::Util.ensure_binary_encoding(public_key.encoding)
+      @private_key = EYAML::Util.ensure_binary_encoding(private_key.encoding)
     end
 
     def decrypt
@@ -47,7 +44,7 @@ class EYAML
 
       [
         "EJ[#{FORMAT_VERSION}",
-        Base64.encode64(@session_public_key),
+        Base64.encode64(session_public_key),
         Base64.encode64(nonce),
         "#{Base64.encode64(ciphertext)}]"
       ].join(":")
@@ -60,19 +57,27 @@ class EYAML
       nonce = Base64.decode64(captures.fetch("nonce"))
       text = Base64.decode64(captures.fetch("text"))
 
-      raise "EYAML only supports version 1" unless wire_version == FORMAT_VERSION
+      raise UnsupportedVersionError, "EYAML only supports version 1" unless wire_version == FORMAT_VERSION
 
       box = decryption_box(old_session_public_key)
       box.decrypt(nonce, text)
     end
 
     def encryption_box
-      @encryption_box ||= RbNaCl::Box.new(@public_key, @session_private_key)
+      @encryption_box ||= RbNaCl::Box.new(@public_key, session_private_key)
     end
 
     def decryption_box(public_key_encrypted_with)
       @decryption_box ||= {}
       @decryption_box[public_key_encrypted_with] ||= RbNaCl::Box.new(public_key_encrypted_with, @private_key)
+    end
+
+    def session_private_key
+      @session_private_key ||= RbNaCl::PrivateKey.generate
+    end
+
+    def session_public_key
+      @session_public_key ||= session_private_key.public_key
     end
 
     def encrypted?(text)
@@ -81,12 +86,12 @@ class EYAML
 
     def traverse(tree, &block)
       tree.map do |key, value|
-        if key.start_with?("_")
-          next [key, value]
-        end
-
         if value.is_a?(Hash)
           next [key, traverse(value, &block)]
+        end
+        # TODO(es): Add tests for keys with an underscore prefix not doing a nested skip
+        if key.start_with?("_")
+          next [key, value]
         end
 
         [key, block.call(value)]
