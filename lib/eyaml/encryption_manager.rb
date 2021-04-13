@@ -18,19 +18,17 @@ module EYAML
 
     def initialize(yaml, public_key, private_key)
       @tree = yaml
-      @public_key = EYAML::Util.ensure_binary_encoding(public_key.encoding)
-      @private_key = EYAML::Util.ensure_binary_encoding(private_key.encoding)
+      @public_key = EYAML::Util.ensure_binary_encoding(public_key)
+      @private_key = EYAML::Util.ensure_binary_encoding(private_key)
     end
 
     def decrypt
-      # Walks through the tree and decrypts each encrypted hash value
       traverse(@tree) do |text|
         encrypted?(text) ? decrypt_text(text) : text
       end
     end
 
     def encrypt
-      # Walks through the tree and encrypts each un-encrypted hash value
       traverse(@tree) do |text|
         encrypted?(text) ? text : encrypt_text(text)
       end
@@ -44,9 +42,9 @@ module EYAML
 
       [
         "EJ[#{FORMAT_VERSION}",
-        Base64.encode64(session_public_key),
-        Base64.encode64(nonce),
-        "#{Base64.encode64(ciphertext)}]"
+        Base64.strict_encode64(session_public_key),
+        Base64.strict_encode64(nonce),
+        "#{Base64.strict_encode64(ciphertext)}]"
       ].join(":")
     end
 

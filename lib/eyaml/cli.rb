@@ -2,7 +2,7 @@ module EYAML
   class InvalidFormatError < StandardError; end
 
   class CLI < Thor
-    class_option :keydir, aliases: "-k", type: :string, default: EYAML::DEFAULT_KEYDIR, desc: "Directory containing EYAML keys"
+    class_option :keydir, aliases: "-k", type: :string, desc: "Directory containing EYAML keys"
 
     desc "encrypt", "(Re-)encrypt one or more EYAML files"
     def encrypt(*files)
@@ -12,8 +12,7 @@ module EYAML
 
         bytes_written = EYAML.encrypt_file_in_place(
           file_path,
-          keydir: options.fetch(:keydir),
-          output_format: format_for_file(file_path)
+          keydir: options.fetch(:keydir, nil)
         )
 
         puts "Wrote #{bytes_written} bytes to #{file_path}."
@@ -32,19 +31,14 @@ module EYAML
 
       key_options = if options.fetch(:"key-from-stdin")
         # Read key from STDIN
-        {private_key: ARGF}
+        {private_key: $stdin.gets}
       else
-        {keydir: options.fetch(:keydir)}
+        {keydir: options.fetch(:keydir, nil)}
       end
 
-      plaindata = EYAML.decrypt_file(file, **key_options)
-      eyaml = if format_for_file(file_path) == :json
-        JSON.pretty_generate(plaindata)
-      else
-        EYAML::Util.pretty_yaml(plaindata)
-      end
+      eyaml = EYAML.decrypt_file(file, **key_options)
 
-      if options.has_key?(:output)
+      if options.has_key?("output")
         output_file = Pathname.new(options.fetch(:output))
         File.write(output_file, eyaml)
         return
@@ -56,17 +50,13 @@ module EYAML
     method_option :write, type: :boolean, aliases: "-w", desc: "rather than printing both keys, print the public and write the private into the keydir", default: false
     desc "keygen", "Generate a new EYAML keypair"
     def keygen
-      public_key, private_key = EYAML.generate_keypair
+      public_key, private_key = EYAML.generate_keypair(
+        save: options.fetch(:write),
+        keydir: options.fetch(:keydir, nil)
+      )
 
-      if options.fetch(:write)
-        public_key_path = File.expand_path(public_key, options.fetch(:keydir))
-
-        File.write(public_key_path, private_key)
-        puts public_key
-      else
-        puts "Public Key: #{public_key}"
-        puts "Private Key: #{private_key}"
-      end
+      puts "Public Key: #{public_key}"
+      puts "Private Key: #{private_key}" unless options.fetch(:write)
     end
 
     map e: :encrypt
@@ -75,19 +65,6 @@ module EYAML
 
     def self.exit_on_failure?
       true
-    end
-
-    private
-
-    def format_for_file(file_path)
-      case File.extname(file_path)
-      when ".eyaml"
-        :yaml
-      when ".ejson"
-        :json
-      else
-        raise EYAML::InvalidFormatError, "Unsupported file type"
-      end
     end
   end
 end
