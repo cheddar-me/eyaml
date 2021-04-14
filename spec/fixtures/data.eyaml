@@ -1,0 +1,7 @@
+_public_key: "d1c7ba73c520445c5ba14984da8119f2f7b8df7bcdb3f37f5afe9613b118936a"
+secret: "EJ[1:egJgZHLIZfR836f9cOM7g49aPELl7ZgKRz7oDNGLa3s=:1NucdUwyqVGtv7Vj7fH7hfWzg70wUbKn:N5adZhS8xuySyQ2MvY7f027p0VqO3Qeb]"
+s3cr3t: "p4ssw0rd"
+_skip_me: "not_secret"
+_extension: "eyaml"
+_dont_skip_me:
+  another_secret: "ssshhh"
