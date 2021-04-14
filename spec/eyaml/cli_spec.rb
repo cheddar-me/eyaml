@@ -121,13 +121,5 @@ RSpec.describe EYAML::CLI do
 
       EYAML::CLI.start(["decrypt", "--keydir=#{test_keydir}", test_file])
     end
-
-    it "sets the key directory when encrypting a file" do
-      expect(File).to receive(:read).with(
-        File.join(test_keydir, public_key)
-      ).and_return(private_key)
-
-      EYAML::CLI.start(["encrypt", "--keydir=#{test_keydir}", test_file])
-    end
   end
 end

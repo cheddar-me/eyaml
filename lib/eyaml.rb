@@ -26,17 +26,16 @@ module EYAML
       [public_key, private_key]
     end
 
-    def encrypt(plaindata, keydir: nil)
+    def encrypt(plaindata)
       public_key = load_public_key(plaindata)
-      private_key = load_private_key_from(public_key: public_key, keydir: keydir)
 
-      encryption_manager = EncryptionManager.new(plaindata, public_key, private_key)
+      encryption_manager = EncryptionManager.new(plaindata, public_key)
       encryption_manager.encrypt
     end
 
-    def encrypt_file_in_place(file_path, keydir: nil)
+    def encrypt_file_in_place(file_path)
       plaindata = YAML.load_file(file_path)
-      cipherdata = encrypt(plaindata, keydir: keydir)
+      cipherdata = encrypt(plaindata)
 
       eyaml = format_for_file(cipherdata, file_path)
 
