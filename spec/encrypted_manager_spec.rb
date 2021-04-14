@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe EYAML::EncryptionManager do
-  include EncryptionSpecHelpers
+  include EncryptionHelper
 
   describe ".new_keypair" do
     it "returns a Curve25519XSalsa20Poly1305 public/private key pair" do

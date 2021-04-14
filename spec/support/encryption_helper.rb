@@ -1,4 +1,4 @@
-module EncryptionSpecHelpers
+module EncryptionHelper
   extend RSpec::SharedContext
   include FakeFS::SpecHelpers
 
@@ -17,6 +17,7 @@ module EncryptionSpecHelpers
       "secret" => "EJ[1:egJgZHLIZfR836f9cOM7g49aPELl7ZgKRz7oDNGLa3s=:1NucdUwyqVGtv7Vj7fH7hfWzg70wUbKn:N5adZhS8xuySyQ2MvY7f027p0VqO3Qeb]",
       "s3cr3t" => "p4ssw0rd",
       "_skip_me" => "not_secret",
+      "_extension" => "ejson", # This is only the correct value for data.ejson
       "_dont_skip_me" => {
         "another_secret" => "ssshhh"
       }
@@ -27,5 +28,9 @@ module EncryptionSpecHelpers
     FileUtils.mkdir_p(default_keydir)
     FileUtils.mkdir_p(test_keydir)
     File.write(public_key_path, private_key)
+
+    supported_extensions.each do |ext|
+      FakeFS::FileSystem.clone(fixtures_root.join("data.#{ext}"))
+    end
   end
 end

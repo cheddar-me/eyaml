@@ -3,6 +3,7 @@
   "secret": "EJ[1:egJgZHLIZfR836f9cOM7g49aPELl7ZgKRz7oDNGLa3s=:1NucdUwyqVGtv7Vj7fH7hfWzg70wUbKn:N5adZhS8xuySyQ2MvY7f027p0VqO3Qeb]",
   "s3cr3t": "p4ssw0rd",
   "_skip_me": "not_secret",
+  "_extension": "ejson",
   "_dont_skip_me": {
     "another_secret": "EJ[1:vr6e0PrO6xzH5N9c6Rs8ERt+DJXZeS0rZPDIZxMJWDg=:B1Iyfp3NBN/Kox9kQXWLV7F8BkNCckTA:MJh0KNGPimGadsUbQUZY21/nZFlFtw==]"
   }

@@ -1,15 +1,8 @@
 # frozen_string_literal: true
 
 RSpec.describe EYAML do
-  include EncryptionSpecHelpers
-
-  def prepare_file_with_new_ext(from_ext, to_ext)
-    original_file = File.expand_path("data.#{from_ext}", FIXTURES_PATH)
-    test_file = File.expand_path("test-data.#{to_ext}", FIXTURES_PATH)
-    FileUtils.cp(original_file, test_file)
-
-    test_file
-  end
+  include EncryptionHelper
+  include FileHelper
 
   describe ".generate_keypair" do
     it "returns a public/private key pair" do
@@ -154,14 +147,8 @@ RSpec.describe EYAML do
   end
 
   describe ".encrypt_file_in_place" do
-    before(:each) do
-      supported_extensions.each do |ext|
-        FakeFS::FileSystem.clone(File.expand_path("data.#{ext}", FIXTURES_PATH))
-      end
-    end
-
     it "encrypts the specified file" do
-      test_file = File.expand_path("data.eyaml", FIXTURES_PATH)
+      test_file = fixtures_root.join("data.eyaml")
       plain_secret_value = YAML.load_file(test_file).fetch("s3cr3t")
       expect(plain_secret_value).to match("p4ssw0rd")
 
@@ -172,7 +159,7 @@ RSpec.describe EYAML do
     end
 
     it "formats the output as JSON if the file extension is .ejson" do
-      test_file = prepare_file_with_new_ext("eyaml", "ejson")
+      test_file = duplicate_fixture_with_new_ext("eyaml", "ejson")
       expect(test_file).to be_a_yaml_file
 
       EYAML.encrypt_file_in_place(test_file)
@@ -181,7 +168,7 @@ RSpec.describe EYAML do
     end
 
     it "formats the output as YAML if the file extension is .eyaml" do
-      test_file = prepare_file_with_new_ext("ejson", "eyaml")
+      test_file = duplicate_fixture_with_new_ext("ejson", "eyaml")
       expect(test_file).to be_a_json_file
 
       EYAML.encrypt_file_in_place(test_file)
@@ -190,7 +177,7 @@ RSpec.describe EYAML do
     end
 
     it "formats the output as YAML if the file extension is .eyml" do
-      test_file = prepare_file_with_new_ext("ejson", "eyml")
+      test_file = duplicate_fixture_with_new_ext("ejson", "eyml")
       expect(test_file).to be_a_json_file
 
       EYAML.encrypt_file_in_place(test_file)
@@ -200,14 +187,8 @@ RSpec.describe EYAML do
   end
 
   describe ".decrypt_file" do
-    before(:each) do
-      supported_extensions.each do |ext|
-        FakeFS::FileSystem.clone(File.expand_path("data.#{ext}", FIXTURES_PATH))
-      end
-    end
-
     it "decrypts the specified file" do
-      test_file = File.expand_path("data.ejson", FIXTURES_PATH)
+      test_file = fixtures_root.join("data.ejson")
       expect(EYAML.decrypt_file(test_file)).to eq(
         JSON.pretty_generate(
           # We need to update data to contain only decrypted values
@@ -217,19 +198,19 @@ RSpec.describe EYAML do
     end
 
     it "formats the output as JSON if the file extension is .ejson" do
-      test_file = prepare_file_with_new_ext("eyaml", "ejson")
+      test_file = duplicate_fixture_with_new_ext("eyaml", "ejson")
       expect(test_file).to be_a_yaml_file
       expect(EYAML.decrypt_file(test_file)).to be_json
     end
 
     it "formats the output as YAML if the file extension is .eyaml" do
-      test_file = prepare_file_with_new_ext("ejson", "eyaml")
+      test_file = duplicate_fixture_with_new_ext("ejson", "eyaml")
       expect(test_file).to be_a_json_file
       expect(EYAML.decrypt_file(test_file)).to be_yaml
     end
 
     it "formats the output as YAML if the file extension is .eyml" do
-      test_file = prepare_file_with_new_ext("ejson", "eyml")
+      test_file = duplicate_fixture_with_new_ext("ejson", "eyml")
       expect(test_file).to be_a_json_file
       expect(EYAML.decrypt_file(test_file)).to be_yaml
     end

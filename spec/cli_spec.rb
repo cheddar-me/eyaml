@@ -1,15 +1,9 @@
 # frozen_string_literal: true
 
 RSpec.describe EYAML::CLI do
-  include EncryptionSpecHelpers
+  include EncryptionHelper
 
-  before(:each) do
-    supported_extensions.each do |ext|
-      FakeFS::FileSystem.clone(File.expand_path("data.#{ext}", FIXTURES_PATH))
-    end
-  end
-
-  let(:test_file) { File.expand_path("data.eyaml", FIXTURES_PATH) }
+  let(:test_file) { fixtures_root.join("data.eyaml") }
 
   describe "#encrypt" do
     it "encrypts the provided file" do
@@ -24,8 +18,8 @@ RSpec.describe EYAML::CLI do
 
     it "encrypts multiple files when they're provided" do
       test_files = [
-        File.expand_path("data.eyaml", FIXTURES_PATH),
-        File.expand_path("data.ejson", FIXTURES_PATH)
+        fixtures_root.join("data.eyaml"),
+        fixtures_root.join("data.ejson")
       ]
 
       test_files.each do |file|
@@ -53,7 +47,7 @@ RSpec.describe EYAML::CLI do
 
     describe "--output" do
       it "outputs the decrypted data to the provided file, rather than stdout" do
-        target_file = File.expand_path("output.yml", FIXTURES_PATH)
+        target_file = fixtures_root.join("output.yml")
         target_file_path = Pathname.new(target_file)
 
         expect(target_file_path.exist?).to be false

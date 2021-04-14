@@ -12,6 +12,7 @@ module EYAML
 
   DEFAULT_KEYDIR = "/opt/ejson/keys"
   INTERNAL_PUB_KEY = "_public_key"
+  SUPPORTED_EXTENSIONS = %w[eyaml eyml ejson]
 
   class << self
     def generate_keypair(save: false, keydir: nil)
@@ -90,3 +91,4 @@ require_relative "eyaml/version"
 require_relative "eyaml/util"
 require_relative "eyaml/cli"
 require_relative "eyaml/encryption_manager"
+require_relative "eyaml/railtie" if defined?(Rails)
