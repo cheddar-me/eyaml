@@ -103,5 +103,5 @@ gem "ffi", github: "cheddar-me/ffi", branch: "apple-m1", submodules: true
 
 ## Development
 
-To get started, make sure you have a working version of Ruby locally. Then clone the repo, and run `bundle install`. Running `bundle exec rake` or `bundle exec rake spec` will run the test suite.
+To get started, make sure you have a working version of Ruby locally. Then clone the repo, and run `bin/setup` (this will install `libsodium` if you're on a Mac and setup bundler). Running `bundle exec rake` or `bundle exec rake spec` will run the test suite.
 
