@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "spec_helper"
-
 RSpec.describe(EYAML::Rails::Railtie) do
   include EncryptionHelper
   include FileHelper

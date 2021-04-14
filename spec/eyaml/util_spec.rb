@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "spec_helper"
-
 RSpec.describe EYAML::Util do
   describe ".pretty_yaml" do
     it "will return a hash as YAML without the three dash prefix" do
