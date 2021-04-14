@@ -1,17 +1,18 @@
 # frozen_string_literal: true
 
+require "bundler/setup"
 require "pry"
 require "fileutils"
 require "fakefs/spec_helpers"
 
-require "support/encryption_helper"
-require "support/custom_matchers"
-require "support/path_helper"
-require "support/file_helper"
-require "support/rails_helper"
-
 require "rails"
 require "eyaml"
+
+require_relative "support/encryption_helper"
+require_relative "support/custom_matchers"
+require_relative "support/path_helper"
+require_relative "support/file_helper"
+require_relative "support/rails_helper"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
