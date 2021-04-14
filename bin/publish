@@ -3,4 +3,4 @@ set -euo pipefail
 IFS=$'\n\t'
 
 gem build eyaml
-gem publish $(ls -t *.gem | head -1)
+gem push $(ls -t *.gem | head -1)
