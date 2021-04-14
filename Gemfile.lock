@@ -10,7 +10,7 @@ PATH
   remote: .
   specs:
     eyaml (0.1.0)
-      rbnacl
+      rbnacl (~> 7.1)
       thor (~> 1.1)
 
 GEM
