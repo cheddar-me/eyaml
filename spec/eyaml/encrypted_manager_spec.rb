@@ -95,5 +95,15 @@ RSpec.describe EYAML::EncryptionManager do
     it "encrypts values with the EJSON v1 format" do
       expect(subject.encrypt["s3cr3t"]).to match(/\AEJ\[1:/)
     end
+
+    describe "when private key isn't set" do
+      subject do
+        EYAML::EncryptionManager.new(data, public_key)
+      end
+
+      it "walks through the provided yaml and encrypts each un-encrypted hash value" do
+        expect(subject.encrypt["s3cr3t"]).to match(/\AEJ\[[\w:\/+=]+\]\z/)
+      end
+    end
   end
 end

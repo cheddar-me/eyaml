@@ -16,10 +16,10 @@ module EYAML
       end
     end
 
-    def initialize(yaml, public_key, private_key)
+    def initialize(yaml, public_key, private_key = nil)
       @tree = yaml
       @public_key = EYAML::Util.ensure_binary_encoding(public_key)
-      @private_key = EYAML::Util.ensure_binary_encoding(private_key)
+      @private_key = private_key.nil? ? nil : EYAML::Util.ensure_binary_encoding(private_key)
     end
 
     def decrypt

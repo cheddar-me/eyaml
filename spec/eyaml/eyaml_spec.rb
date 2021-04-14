@@ -59,34 +59,6 @@ RSpec.describe EYAML do
       expect(EYAML.encrypt(data)["_skip_me"]).to eq("not_secret")
     end
 
-    it "reads the public key from the hash key '_public_key'" do
-      expect(File).to receive(:read).with(
-        File.join(default_keydir, data.fetch("_public_key"))
-      ).and_return(private_key)
-      EYAML.encrypt(data)
-    end
-
-    it "it defaults to reading the private key from the ENV $EJSON_KEYDIR if it's set" do
-      allow(ENV).to receive(:[]).with("EJSON_KEYDIR").and_return(test_keydir)
-      expect(File).to receive(:read).with(
-        File.join(test_keydir, public_key)
-      ).and_return(private_key)
-
-      EYAML.encrypt(data)
-    end
-
-    it "it will read a private key from the provided 'keydir'" do
-      expect(File).to receive(:read).with(
-        File.join(test_keydir, public_key)
-      ).and_return(private_key)
-      EYAML.encrypt(data, keydir: test_keydir)
-    end
-
-    it "it defaults to reading the private key from /opt/ejson/keys" do
-      expect(File).to receive(:read).with(public_key_path).and_return(private_key)
-      EYAML.encrypt(data)
-    end
-
     context "missing '_public_key' key" do
       let(:data) {
         {"secret" => "EJ[1:egJgZHLIZfR836f9cOM7g49aPELl7ZgKRz7oDNGLa3s=:1NucdUwyqVGtv7Vj7fH7hfWzg70wUbKn:N5adZhS8xuySyQ2MvY7f027p0VqO3Qeb]"}
