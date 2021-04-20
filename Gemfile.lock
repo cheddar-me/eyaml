@@ -9,7 +9,7 @@ GIT
 PATH
   remote: .
   specs:
-    eyaml (0.1.1)
+    eyaml (0.1.2)
       rbnacl (~> 7.1)
       thor (~> 1.1)
 

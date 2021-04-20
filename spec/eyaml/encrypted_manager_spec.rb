@@ -22,7 +22,6 @@ RSpec.describe EYAML::EncryptionManager do
       expect(priv_key.encoding).to be Encoding::ASCII
     end
   end
-
   subject do
     EYAML::EncryptionManager.new(data, public_key, private_key)
   end
@@ -47,6 +46,11 @@ RSpec.describe EYAML::EncryptionManager do
 
     it "doesn't touch values with an underscore in their key" do
       expect(subject.decrypt).to include("_secret" => data["_secret"])
+    end
+
+    it "accepts a private key with trailing newline" do
+      manager = EYAML::EncryptionManager.new(data, public_key, "#{private_key}\n")
+      expect { manager.decrypt }.not_to raise_error
     end
 
     context "invalid EJSON format version" do

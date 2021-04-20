@@ -33,7 +33,7 @@ end
 
 RSpec::Matchers.define :be_public_key_of do |priv_key|
   match do |pub_key|
-    priv_key_bin = EYAML::Util.ensure_binary_encoding(priv_key)
+    priv_key_bin = RbNaCl::Util.hex2bin(priv_key)
     private_key = RbNaCl::Boxes::Curve25519XSalsa20Poly1305::PrivateKey.new(priv_key_bin)
 
     public_key_hex = RbNaCl::Util.bin2hex(private_key.public_key)
