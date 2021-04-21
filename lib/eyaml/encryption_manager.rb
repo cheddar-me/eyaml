@@ -18,8 +18,8 @@ module EYAML
 
     def initialize(yaml, public_key, private_key = nil)
       @tree = yaml
-      @public_key = EYAML::Util.ensure_binary_encoding(public_key)
-      @private_key = private_key.nil? ? nil : EYAML::Util.ensure_binary_encoding(private_key)
+      @public_key = RbNaCl::Util.hex2bin(public_key)
+      @private_key = private_key && RbNaCl::Util.hex2bin(private_key.strip)
     end
 
     def decrypt
