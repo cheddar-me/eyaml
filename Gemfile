@@ -4,7 +4,7 @@ source "https://rubygems.org"
 
 gemspec
 
-gem "ffi", github: "cheddar-me/ffi", branch: "apple-m1", submodules: true
+gem "ffi", "~> 1.15.3"
 gem "rbnacl"
 
 gem "railties"
