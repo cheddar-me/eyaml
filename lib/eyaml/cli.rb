@@ -56,9 +56,9 @@ module EYAML
       puts "Private Key: #{private_key}" unless options.fetch(:write)
     end
 
-    map e: :encrypt
-    map d: :decrypt
-    map g: :keygen
+    map "e" => "encrypt"
+    map "d" => "decrypt"
+    map "g" => "keygen"
 
     def self.exit_on_failure?
       true
