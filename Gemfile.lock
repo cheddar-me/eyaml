@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    eyaml (0.2.0)
+    eyaml (0.3.0)
       rbnacl (~> 7.1)
       thor (~> 1.1)
 
@@ -87,6 +87,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-20
+  arm64-darwin-21
   x86_64-linux
 
 DEPENDENCIES
