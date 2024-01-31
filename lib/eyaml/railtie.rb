@@ -9,7 +9,7 @@ module EYAML
       PRIVATE_KEY_ENV_VAR = "EJSON_PRIVATE_KEY"
 
       config.before_configuration do
-        secrets_or_credentials = if Rails.version >= "7.2" || Dir.glob(Rails.root.join("config", "credentials.*")).any?
+        secrets_or_credentials = if Rails.version.start_with?("7.2") || Dir.glob(Rails.root.join("config", "credentials.*")).any?
           :credentials
         else
           :secrets
