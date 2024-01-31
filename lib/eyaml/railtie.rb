@@ -9,7 +9,13 @@ module EYAML
       PRIVATE_KEY_ENV_VAR = "EJSON_PRIVATE_KEY"
 
       config.before_configuration do
-        secrets_files.each do |file|
+        secrets_or_credentials = if Rails.version >= "7.2" || Dir.glob(Rails.root.join("config", "credentials.*")).any?
+          :credentials
+        else
+          :secrets
+        end
+
+        secrets_files(secrets_or_credentials).each do |file|
           next unless valid?(file)
 
           # If private_key is nil (i.e. when $EJSON_PRIVATE_KEY is not set), EYAML will search
@@ -19,7 +25,7 @@ module EYAML
             .deep_symbolize_keys
             .except(:_public_key)
 
-          break Rails.application.secrets.deep_merge!(secrets)
+          break Rails.application.send(secrets_or_credentials).deep_merge!(secrets)
         end
       end
 
@@ -30,11 +36,11 @@ module EYAML
           pathname.exist?
         end
 
-        def secrets_files
+        def secrets_files(secrets_or_credentials)
           EYAML::SUPPORTED_EXTENSIONS.map do |ext|
             [
-              Rails.root.join("config", "secrets.#{ext}"),
-              Rails.root.join("config", "secrets.#{Rails.env}.#{ext}")
+              Rails.root.join("config", "#{secrets_or_credentials}.#{ext}"),
+              Rails.root.join("config", "#{secrets_or_credentials}.#{Rails.env}.#{ext}")
             ]
           end.flatten
         end
