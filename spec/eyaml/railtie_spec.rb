@@ -12,7 +12,7 @@ RSpec.describe(EYAML::Rails::Railtie) do
     is_expected.to(be_a(::Rails::Railtie))
   end
 
-  context "with credentials" do
+  context "with only credentials" do
     let(:credentials) { credentials_class.new }
 
     before(:each) do
@@ -123,7 +123,7 @@ RSpec.describe(EYAML::Rails::Railtie) do
     end
   end
 
-  context "with secrets" do
+  context "with only secrets" do
     let(:secrets) { secrets_class.new }
 
     before(:each) do
@@ -231,6 +231,47 @@ RSpec.describe(EYAML::Rails::Railtie) do
           expect(secrets).to(be_empty)
         end
       end
+    end
+  end
+
+  context "with both credentials and secrets" do
+    let(:secrets) { secrets_class.new }
+    let(:credentials) { credentials_class.new }
+
+    before(:each) do
+      FakeFS::FileSystem.clone(fixtures_root)
+
+      supported_extensions.each do |ext|
+        FakeFS::FileUtils.copy_file(
+          fixtures_root.join("data.#{ext}"),
+          config_root.join("secrets.env.#{ext}")
+        )
+
+        FakeFS::FileUtils.copy_file(
+          fixtures_root.join("data.#{ext}"),
+          config_root.join("secrets.#{ext}")
+        )
+
+        FakeFS::FileUtils.copy_file(
+          fixtures_root.join("data.#{ext}"),
+          config_root.join("credentials.env.#{ext}")
+        )
+
+        FakeFS::FileUtils.copy_file(
+          fixtures_root.join("data.#{ext}"),
+          config_root.join("credentials.#{ext}")
+        )
+      end
+
+      allow_rails.to(receive(:root).and_return(fixtures_root))
+      allow_rails.to(receive_message_chain("application.secrets").and_return(secrets))
+      allow_rails.to(receive_message_chain("application.credentials").and_return(credentials))
+    end
+
+    it "prioritizes credential files over secret files" do
+      run_load_hooks
+      expect(credentials).to(include(secret: "password"))
+      expect(secrets).to(be_empty)
     end
   end
 end

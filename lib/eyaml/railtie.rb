@@ -9,13 +9,22 @@ module EYAML
       PRIVATE_KEY_ENV_VAR = "EJSON_PRIVATE_KEY"
 
       config.before_configuration do
-        secrets_or_credentials = if Rails.version.start_with?("7.2") || Dir.glob(Rails.root.join("config", "credentials.*")).any?
-          :credentials
+        secret_files_present = Dir.glob(auth_files(:secrets)).any?
+        credential_files_present = Dir.glob(auth_files(:credentials)).any?
+
+        secrets_or_credentials = if Rails.version >= "7.2"
+          if credential_files_present
+            :credentials
+          end
         else
-          :secrets
+          if credential_files_present
+            :credentials
+          elsif secret_files_present
+            :secrets
+          end
         end
 
-        secrets_files(secrets_or_credentials).each do |file|
+        auth_files(secrets_or_credentials).each do |file|
           next unless valid?(file)
 
           # If private_key is nil (i.e. when $EJSON_PRIVATE_KEY is not set), EYAML will search
@@ -36,13 +45,13 @@ module EYAML
           pathname.exist?
         end
 
-        def secrets_files(secrets_or_credentials)
-          EYAML::SUPPORTED_EXTENSIONS.map do |ext|
+        def auth_files(secrets_or_credentials)
+          EYAML::SUPPORTED_EXTENSIONS.flat_map do |ext|
             [
               Rails.root.join("config", "#{secrets_or_credentials}.#{ext}"),
               Rails.root.join("config", "#{secrets_or_credentials}.#{Rails.env}.#{ext}")
             ]
-          end.flatten
+          end
         end
       end
     end
