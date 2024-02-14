@@ -13,9 +13,7 @@ module EYAML
         credential_files_present = Dir.glob(auth_files(:credentials)).any?
 
         secrets_or_credentials = if Rails.version >= "7.2"
-          if credential_files_present
-            :credentials
-          end
+          :credentials
         else
           if credential_files_present
             :credentials

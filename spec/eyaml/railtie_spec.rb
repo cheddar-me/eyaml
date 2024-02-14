@@ -57,19 +57,19 @@ RSpec.describe(EYAML::Rails::Railtie) do
 
       describe "prioritizes 'credentials' with extension" do
         it "eyaml" do
-          remove_all_that_dont_end_with(".eyaml")
+          remove_auth_files_that_dont_end_with(".eyaml")
           run_load_hooks
           expect(credentials).to(include(_extension: "eyaml"))
         end
 
         it "eyml" do
-          remove_all_that_dont_end_with(".eyml")
+          remove_auth_files_that_dont_end_with(".eyml")
           run_load_hooks
           expect(credentials).to(include(_extension: "eyml"))
         end
 
         it "ejson" do
-          remove_all_that_dont_end_with(".ejson")
+          remove_auth_files_that_dont_end_with(".ejson")
           run_load_hooks
           expect(credentials).to(include(_extension: "ejson"))
         end
@@ -82,20 +82,20 @@ RSpec.describe(EYAML::Rails::Railtie) do
           before { allow_rails.to(receive(:env).and_return(:env)) }
 
           it "eyaml" do
-            remove_all_that_dont_end_with(".eyaml")
+            remove_auth_files_that_dont_end_with(".eyaml")
             run_load_hooks
             expect(credentials).to(include(_extension: "eyaml"))
           end
 
           it "eyml" do
-            remove_all_that_dont_end_with(".eyml")
+            remove_auth_files_that_dont_end_with(".eyml")
 
             run_load_hooks
             expect(credentials).to(include(_extension: "eyml"))
           end
 
           it "ejson" do
-            remove_all_that_dont_end_with(".ejson")
+            remove_auth_files_that_dont_end_with(".ejson")
             run_load_hooks
             expect(credentials).to(include(_extension: "ejson"))
           end
@@ -168,19 +168,19 @@ RSpec.describe(EYAML::Rails::Railtie) do
 
       describe "prioritizes 'secrets' with extension" do
         it "eyaml" do
-          remove_all_that_dont_end_with(".eyaml")
+          remove_auth_files_that_dont_end_with(".eyaml")
           run_load_hooks
           expect(secrets).to(include(_extension: "eyaml"))
         end
 
         it "eyml" do
-          remove_all_that_dont_end_with(".eyml")
+          remove_auth_files_that_dont_end_with(".eyml")
           run_load_hooks
           expect(secrets).to(include(_extension: "eyml"))
         end
 
         it "ejson" do
-          remove_all_that_dont_end_with(".ejson")
+          remove_auth_files_that_dont_end_with(".ejson")
           run_load_hooks
           expect(secrets).to(include(_extension: "ejson"))
         end
@@ -193,20 +193,20 @@ RSpec.describe(EYAML::Rails::Railtie) do
           before { allow_rails.to(receive(:env).and_return(:env)) }
 
           it "eyaml" do
-            remove_all_that_dont_end_with(".eyaml")
+            remove_auth_files_that_dont_end_with(".eyaml")
             run_load_hooks
             expect(secrets).to(include(_extension: "eyaml"))
           end
 
           it "eyml" do
-            remove_all_that_dont_end_with(".eyml")
+            remove_auth_files_that_dont_end_with(".eyml")
 
             run_load_hooks
             expect(secrets).to(include(_extension: "eyml"))
           end
 
           it "ejson" do
-            remove_all_that_dont_end_with(".ejson")
+            remove_auth_files_that_dont_end_with(".ejson")
             run_load_hooks
             expect(secrets).to(include(_extension: "ejson"))
           end

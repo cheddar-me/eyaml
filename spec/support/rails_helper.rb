@@ -40,10 +40,10 @@ module RailsHelper
     end
   end
 
-  def remove_all_that_dont_end_with(ext)
-    Dir[config_root.join("*")].each do |secret_path|
-      next if secret_path.end_with?(ext)
-      File.delete(secret_path)
+  def remove_auth_files_that_dont_end_with(ext)
+    Dir[config_root.join("*")].each do |auth_path|
+      next if auth_path.end_with?(ext)
+      File.delete(auth_path)
     end
   end
 end
