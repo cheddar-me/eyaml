@@ -70,7 +70,15 @@ secret: password
 
 #### `eyaml keygen`
 
-Generates the keypair for the encryption flow to work. The public key must be placed into the file at `_public_key` and the private key must be saved in the default key directory (`/opt/ejson/keys`) with the filename being the public key and the contents, the private key, a key directory you'll provide later, or just pass the `--write` flag for `eyaml` to handle it for you.
+Generates the keypair for the encryption flow to work. The public key must be placed into the file at `_public_key` like this:
+e.g.
+```shell
+-> % cat config/credentials.development.eyaml
+_public_key: a3dbdef9efd1e52a34588de56a6cf9b03bbc2aaf0edda145cfbd9a6370a0a849
+my_secret: 85d1fca99d98c4e7b83b868f75f809e1e33346317b0c354b593cdcdc8793ad4e
+```
+
+The private key must be saved in the default key directory (`/opt/ejson/keys`) with the filename being the public key and the contents, the private key, a key directory you'll provide later, or just pass the `--write` flag for `eyaml` to handle it for you.
 
 ```shell
 -> % eyaml keygen
@@ -88,8 +96,13 @@ b01592942ba10f152bcf7c6b6734f6392554c578ff24cebcc62f9e3da6fcf302
 
 ### Rails
 
-`eyaml` comes with baked in Rails support. It will search for a secrets file in `config/`, decrypt, and load the first valid one it finds.
+`eyaml` comes with baked in Rails support. It will search for a secrets or credentials file in `config/`, decrypt, and load the first valid one it finds.
+Credential files have priority over secrets before rails 7.2:
+`credentials.{eyaml|eyml|ejson}` (e.g. `config/credentials.eyaml`) then `credentials.$env.{eyaml|eyml|ejson}` (e.g. `credentials.production.eyml`).
+Then if no credentials are found it will look for a secrets file:
 `secrets.{eyaml|eyml|ejson}` (e.g. `config/secrets.eyaml`) then `secrets.$env.{eyaml|eyml|ejson}` (e.g. `secrets.production.eyml`).
+
+Note: From rails 7.2 onwards secrets are deprecated and eyaml will only look for credential files.
 
 Instead of needing a private key locally, you can provide it to EYAML by setting `EJSON_PRIVATE_KEY` and it'll be automatically used for decrypting the secrets file.
 
