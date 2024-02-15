@@ -9,6 +9,10 @@ module RailsHelper
     ActiveSupport::OrderedOptions
   end
 
+  def credentials_class
+    ActiveSupport::OrderedOptions
+  end
+
   def run_load_hooks
     ActiveSupport.run_load_hooks(:before_configuration)
   end
@@ -24,22 +28,22 @@ module RailsHelper
     fixtures_root.join("config")
   end
 
-  def remove_secrets_files
+  def remove_files(type: :secrets)
     supported_extensions.each do |ext|
-      File.delete(config_root.join("secrets.#{ext}"))
+      File.delete(config_root.join("#{type}.#{ext}"))
     end
   end
 
-  def remove_environment_secrets_files
+  def remove_environment_files(type: :secrets)
     supported_extensions.each do |ext|
-      File.delete(config_root.join("secrets.env.#{ext}"))
+      File.delete(config_root.join("#{type}.env.#{ext}"))
     end
   end
 
-  def remove_all_secrets_that_dont_end_with(ext)
-    Dir[config_root.join("*")].each do |secret_path|
-      next if secret_path.end_with?(ext)
-      File.delete(secret_path)
+  def remove_auth_files_that_dont_end_with(ext)
+    Dir[config_root.join("*")].each do |auth_path|
+      next if auth_path.end_with?(ext)
+      File.delete(auth_path)
     end
   end
 end
