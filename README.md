@@ -23,7 +23,7 @@ gem 'eyaml'
 
 For MacOS users, libsodium is available via homebrew and can be installed with:
 ```shell
-Wbrew install libsodium
+brew install libsodium
 ```
 
 ## Usage
