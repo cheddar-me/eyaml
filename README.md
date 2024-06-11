@@ -23,7 +23,7 @@ gem 'eyaml'
 
 For MacOS users, libsodium is available via homebrew and can be installed with:
 ```shell
-brew install libsodium
+Wbrew install libsodium
 ```
 
 ## Usage
@@ -55,12 +55,13 @@ Options:
 ```shell
 -> % eyaml encrypt config/secrets.production.eyaml
 Wrote 517 bytes to config/secrets.production.eyaml.
-```
 
+Note: entries starting with an `_` won't be encrypted. This has to be the case for the `_public_key`, but can be handy if you want to add keys in there that you dont't want to encrypt. Like a public key for ex.
+```
 
 #### `eyaml decrypt`
 
-Decrypts the provided EYAML file.
+Decrypts the whole provided EYAML file.
 
 ```shell
 -> % eyaml decrypt config/secrets.production.eyaml
@@ -78,7 +79,7 @@ _public_key: a3dbdef9efd1e52a34588de56a6cf9b03bbc2aaf0edda145cfbd9a6370a0a849
 my_secret: 85d1fca99d98c4e7b83b868f75f809e1e33346317b0c354b593cdcdc8793ad4e
 ```
 
-The private key must be saved in the default key directory (`/opt/ejson/keys`) with the filename being the public key and the contents, the private key, a key directory you'll provide later, or just pass the `--write` flag for `eyaml` to handle it for you.
+The private key must be saved in the default key directory (`/opt/ejson/keys`) or the `EJSON_PRIVATE_KEY` must point to the right directory, with the filename being the public key and the contents, the private key, a key directory you'll provide later, or just pass the `--write` flag for `eyaml` to handle it for you.
 
 ```shell
 -> % eyaml keygen
@@ -96,7 +97,12 @@ b01592942ba10f152bcf7c6b6734f6392554c578ff24cebcc62f9e3da6fcf302
 
 ### Rails
 
-`eyaml` comes with baked in Rails support. It will search for a secrets or credentials file in `config/`, decrypt, and load the first valid one it finds.
+`eyaml` comes with baked in Rails support.
+It will search for a rails secrets or credentials file in `config/`, decrypt, and load the first valid one it finds.
+
+For this a public-private keyfile needs to be present, which you can generate with `eyaml keygen`. For a development/test environment you can keep this in your
+version control, but on production you want to take the proper precautions since this can contain your rails master key as well.
+
 Credential files have priority over secrets before rails 7.2:
 `credentials.{eyaml|eyml|ejson}` (e.g. `config/credentials.eyaml`) then `credentials.$env.{eyaml|eyml|ejson}` (e.g. `credentials.production.eyml`).
 Then if no credentials are found it will look for a secrets file:
@@ -105,6 +111,55 @@ Then if no credentials are found it will look for a secrets file:
 Note: From rails 7.2 onwards secrets are deprecated and eyaml will only look for credential files.
 
 Instead of needing a private key locally, you can provide it to EYAML by setting `EJSON_PRIVATE_KEY` and it'll be automatically used for decrypting the secrets file.
+
+If you put your rails master key encrypted in the eyaml file, make sure you don't have another `master.key` file somewhere, since that can interfere.
+
+### Example setup
+
+To add encryption + credentials to a rails project do the following things:
+
+- Generate a private-public keypair with (or add the --write flag and a keypair file will be written to `/opt/ejson/keys/`):
+  ```shell
+  eyaml keygen
+
+  Public Key: a3dbdef9efd1e52a34588de56a6cf9b03bbc2aaf0edda145cfbd9a6370a0a849
+  Private Key: b01592942ba10f152bcf7c6b6734f6392554c578ff24cebcc62f9e3da6fcf302
+  ```
+
+  For this example I show you a dev setup, but for test, production etc. it works the same.
+
+- Create a file with the name of the public key that contains the private key.
+  If you don't want to add the file to the `/opt/ejson/keys/` (for for example a dev/test environment) so you can check it in with your version management you can set the `EJSON_KEYDIR` to the keypair file
+  in rails `application.rb` like so:
+  ```ruby
+  ENV["EJSON_KEYDIR"] = File.expand_path("../dev/ejson-keys", __dir__) unless Rails.env.production?
+  ```
+  and rails will look there for the file decryption when the environment loads.
+  You can test this by calling
+  ```ruby
+  Rails.application.credentials.secret_key_base
+  ```
+  in a rails console and it should give you back the unencrypted key.
+
+  Note that you should not have a `config/master.key` file present (created by rails when using it's credentials management like for ex when calling `rails credentials:edit`) when using eyaml.
+  Eyaml is a replacement for rails's credentials management and currently conflicts with it. Eyaml will raise when a master.key is present.
+
+- Create a `config/credentials.development.eyaml` file
+- In the credentials file add:
+  ```yaml
+  _public_key: a3dbdef9efd1e52a34588de56a6cf9b03bbc2aaf0edda145cfbd9a6370a0a849
+  ```
+  on top
+- You can then add your rails `secret_key_base` like so:
+  ```yaml
+  secret_key_base: <secret>
+  ```
+  And any other key you need in there.
+- Then every time you edit your eyaml file(s) run (for ex for development):
+  ```shell
+  eyaml encrypt config/credentials.development.eyaml
+  ```
+  And you can see that the key put in there is encrypted afterwards (except the ones starting with an `_`).
 
 ### Apple M1 Support
 

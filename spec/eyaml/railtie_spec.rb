@@ -37,6 +37,20 @@ RSpec.describe(EYAML::Rails::Railtie) do
         allow_rails.to(receive_message_chain("application.credentials").and_return(credentials))
       end
 
+      after do
+        if File.exist?(config_root.join("master.key"))
+          File.delete(config_root.join("master.key"))
+        end
+      end
+
+      it "raises when a master.key file is present" do
+        run_load_hooks
+        expect(credentials).to(include(:secret))
+
+        File.write(config_root.join("master.key"), "test")
+        expect { run_load_hooks }.to raise_error(EYAML::Rails::Railtie::ConflictError)
+      end
+
       it "merges credentials into application credentials" do
         run_load_hooks
         expect(credentials).to(include(:secret))
