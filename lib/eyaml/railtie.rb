@@ -8,7 +8,13 @@ module EYAML
     class Railtie < Rails::Railtie
       PRIVATE_KEY_ENV_VAR = "EJSON_PRIVATE_KEY"
 
+      class ConflictError < StandardError
+      end
+
       config.before_configuration do
+        if File.exist?(Rails.root.join("config", "master.key"))
+          raise ConflictError, "A config/master.key has been found. The rails credentials lookup conflicts with eyaml. Please remove rails credentials management by removing the master.key file to keep using eyaml."
+        end
         secret_files_present = Dir.glob(auth_files(:secrets)).any?
         credential_files_present = Dir.glob(auth_files(:credentials)).any?
 
