@@ -49,7 +49,8 @@ GEM
       ruby2_keywords
     erubi (1.12.0)
     fakefs (1.8.0)
-    ffi (1.15.5)
+    ffi (1.17.0-arm64-darwin)
+    ffi (1.17.0-x86_64-linux-gnu)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
     io-console (0.7.2)
@@ -132,7 +133,7 @@ DEPENDENCIES
   debug
   eyaml!
   fakefs
-  ffi (~> 1.15.5)
+  ffi (~> 1.17.0)
   pry
   railties
   rake (~> 13.0)
