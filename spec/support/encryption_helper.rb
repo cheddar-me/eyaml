@@ -19,7 +19,8 @@ module EncryptionHelper
       "_skip_me" => "not_secret",
       "_extension" => "ejson", # This is only the correct value for data.ejson
       "_dont_skip_me" => {
-        "another_secret" => "ssshhh"
+        "another_secret" => "ssshhh",
+        "_underscored_secret" => "not encrypted"
       }
     }
   }

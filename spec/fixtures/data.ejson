@@ -5,6 +5,7 @@
   "_skip_me": "not_secret",
   "_extension": "ejson",
   "_dont_skip_me": {
-    "another_secret": "EJ[1:vr6e0PrO6xzH5N9c6Rs8ERt+DJXZeS0rZPDIZxMJWDg=:B1Iyfp3NBN/Kox9kQXWLV7F8BkNCckTA:MJh0KNGPimGadsUbQUZY21/nZFlFtw==]"
+    "another_secret": "EJ[1:vr6e0PrO6xzH5N9c6Rs8ERt+DJXZeS0rZPDIZxMJWDg=:B1Iyfp3NBN/Kox9kQXWLV7F8BkNCckTA:MJh0KNGPimGadsUbQUZY21/nZFlFtw==]",
+    "_underscored_secret": "not encrypted"
   }
 }

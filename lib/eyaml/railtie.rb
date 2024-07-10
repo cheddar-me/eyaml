@@ -35,8 +35,9 @@ module EYAML
           # for a public/private key in the key directory (either $EJSON_KEYDIR, if set, or /opt/ejson/keys)
           cipherdata = YAML.load_file(file)
           secrets = EYAML.decrypt(cipherdata, private_key: ENV[PRIVATE_KEY_ENV_VAR])
+            .except("_public_key")
+          secrets = EYAML::Util.with_deep_deundescored_keys(secrets)
             .deep_symbolize_keys
-            .except(:_public_key)
 
           break Rails.application.send(secrets_or_credentials).deep_merge!(secrets)
         end

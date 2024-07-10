@@ -74,18 +74,21 @@ RSpec.describe(EYAML::Rails::Railtie) do
           remove_auth_files_that_dont_end_with(".eyaml")
           run_load_hooks
           expect(credentials).to(include(_extension: "eyaml"))
+          expect(credentials).to(include(extension: "eyaml"))
         end
 
         it "eyml" do
           remove_auth_files_that_dont_end_with(".eyml")
           run_load_hooks
           expect(credentials).to(include(_extension: "eyml"))
+          expect(credentials).to(include(extension: "eyml"))
         end
 
         it "ejson" do
           remove_auth_files_that_dont_end_with(".ejson")
           run_load_hooks
           expect(credentials).to(include(_extension: "ejson"))
+          expect(credentials).to(include(extension: "ejson"))
         end
       end
 
@@ -99,6 +102,7 @@ RSpec.describe(EYAML::Rails::Railtie) do
             remove_auth_files_that_dont_end_with(".eyaml")
             run_load_hooks
             expect(credentials).to(include(_extension: "eyaml"))
+            expect(credentials).to(include(extension: "eyaml"))
           end
 
           it "eyml" do
@@ -106,12 +110,14 @@ RSpec.describe(EYAML::Rails::Railtie) do
 
             run_load_hooks
             expect(credentials).to(include(_extension: "eyml"))
+            expect(credentials).to(include(extension: "eyml"))
           end
 
           it "ejson" do
             remove_auth_files_that_dont_end_with(".ejson")
             run_load_hooks
             expect(credentials).to(include(_extension: "ejson"))
+            expect(credentials).to(include(extension: "ejson"))
           end
         end
 
@@ -185,18 +191,21 @@ RSpec.describe(EYAML::Rails::Railtie) do
           remove_auth_files_that_dont_end_with(".eyaml")
           run_load_hooks
           expect(secrets).to(include(_extension: "eyaml"))
+          expect(secrets).to(include(extension: "eyaml"))
         end
 
         it "eyml" do
           remove_auth_files_that_dont_end_with(".eyml")
           run_load_hooks
           expect(secrets).to(include(_extension: "eyml"))
+          expect(secrets).to(include(extension: "eyml"))
         end
 
         it "ejson" do
           remove_auth_files_that_dont_end_with(".ejson")
           run_load_hooks
           expect(secrets).to(include(_extension: "ejson"))
+          expect(secrets).to(include(extension: "ejson"))
         end
       end
 
@@ -210,6 +219,7 @@ RSpec.describe(EYAML::Rails::Railtie) do
             remove_auth_files_that_dont_end_with(".eyaml")
             run_load_hooks
             expect(secrets).to(include(_extension: "eyaml"))
+            expect(secrets).to(include(extension: "eyaml"))
           end
 
           it "eyml" do
@@ -217,12 +227,14 @@ RSpec.describe(EYAML::Rails::Railtie) do
 
             run_load_hooks
             expect(secrets).to(include(_extension: "eyml"))
+            expect(secrets).to(include(extension: "eyml"))
           end
 
           it "ejson" do
             remove_auth_files_that_dont_end_with(".ejson")
             run_load_hooks
             expect(secrets).to(include(_extension: "ejson"))
+            expect(secrets).to(include(extension: "ejson"))
           end
         end
 
