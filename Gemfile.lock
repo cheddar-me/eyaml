@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    eyaml (0.4.2)
+    eyaml (0.4.3)
       rbnacl (~> 7.1)
       thor (~> 1.1)
 
