@@ -15,10 +15,10 @@ RSpec.describe EYAML::Util do
       expect(EYAML::Util.with_deep_deundescored_keys(yaml_without_prefix)).to eq({"a"=>"1", "b"=>"2", "c"=>{"d"=>"3", "_d"=>"3"}, "_c"=>{"d"=>"3", "_d"=>"3"}})
     end
 
-    it "will raise when a de-underscored key already exists" do
-      yaml_without_prefix = YAML.load_file(fixtures_root.join("pretty.yml")).merge!("_b" => "X")
+    it "does not overwrite the not underscored key when we have an underscored key" do
+      yaml_without_prefix = YAML.load_file(fixtures_root.join("pretty.yml")).merge("_b" => "X")
 
-      expect { EYAML::Util.with_deep_deundescored_keys(yaml_without_prefix) }.to raise_error(KeyError)
+      expect(EYAML::Util.with_deep_deundescored_keys(yaml_without_prefix)).to eq({"a"=>"1", "b"=>"2", "_b"=>"X", "c"=>{"d"=>"3", "_d"=>"3"}, "_c"=>{"d"=>"3", "_d"=>"3"}})
     end
   end
 end

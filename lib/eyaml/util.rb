@@ -14,25 +14,16 @@ module EYAML
       def with_deep_deundescored_keys(hash)
         hash.each_with_object({}) do |pair, total|
           key, value = pair
-          case value
-          when Hash
-            child_hash = with_deep_deundescored_keys(value)
 
-            if key.start_with?("_")
-              raise KeyError, "De-underscored key '#{key[1..]}' already exists." if total.key?(key[1..])
+          value = with_deep_deundescored_keys(value) if value.is_a?(Hash)
 
-              total[key[1..]] = child_hash
-            end
+          if key.start_with?("_")
+            deunderscored_key = key[1..]
 
-            total[key] = child_hash
-          else
-            if key.start_with?("_")
-              raise KeyError, "De-underscored key '#{key[1..]}' already exists." if total.key?(key[1..])
-
-              total[key[1..]] = value
-            end
-            total[key] = value
+            total[deunderscored_key] = value unless total.key?(deunderscored_key)
           end
+
+          total[key] = value
         end
       end
     end
