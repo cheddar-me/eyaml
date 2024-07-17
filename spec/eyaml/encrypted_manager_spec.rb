@@ -32,7 +32,10 @@ RSpec.describe EYAML::EncryptionManager do
         "_public_key" => public_key,
         "secret" => "EJ[1:egJgZHLIZfR836f9cOM7g49aPELl7ZgKRz7oDNGLa3s=:1NucdUwyqVGtv7Vj7fH7hfWzg70wUbKn:N5adZhS8xuySyQ2MvY7f027p0VqO3Qeb]",
         "s3cr3t" => "p4ssw0rd",
-        "_secret" => "EJ[1:egJgZHLIZfR836f9cOM7g49aPELl7ZgKRz7oDNGLa3s=:1NucdUwyqVGtv7Vj7fH7hfWzg70wUbKn:N5adZhS8xuySyQ2MvY7f027p0VqO3Qeb]"
+        "_secret" => "EJ[1:egJgZHLIZfR836f9cOM7g49aPELl7ZgKRz7oDNGLa3s=:1NucdUwyqVGtv7Vj7fH7hfWzg70wUbKn:N5adZhS8xuySyQ2MvY7f027p0VqO3Qeb]",
+        "deep_nested" => {
+          "_underscored_secret" => "highly secret"
+        }
       }
     }
 
@@ -46,6 +49,10 @@ RSpec.describe EYAML::EncryptionManager do
 
     it "doesn't touch values with an underscore in their key" do
       expect(subject.decrypt).to include("_secret" => data["_secret"])
+    end
+
+    it "doesn't skip nested secrets" do
+      expect(subject.decrypt.dig("deep_nested", "_underscored_secret")).to eq("highly secret")
     end
 
     it "accepts a private key with trailing newline" do
@@ -75,7 +82,10 @@ RSpec.describe EYAML::EncryptionManager do
         "s3cr3t" => "p4ssw0rd",
         "_skip_me" => "not_secret",
         "_dont_skip_me" => {
-          "another_secret" => "ssshhh"
+          "another_secret" => "ssshhh",
+          "dont_skip_me_too" => {
+            "_deep_secret" => "ssh[FILTERED]hh"
+          }
         }
       }
     }
@@ -94,6 +104,10 @@ RSpec.describe EYAML::EncryptionManager do
 
     it "will encrypt subtrees even if the key is prefixed with an underscore" do
       expect(subject.encrypt.dig("_dont_skip_me", "another_secret")).to match(/\AEJ\[[\w:\/+=]+\]\z/)
+    end
+
+    it "doesn't skip deep nested underscored secrets" do
+      expect(subject.encrypt.dig("_dont_skip_me", "dont_skip_me_too", "_deep_secret")).to eq("ssh[FILTERED]hh")
     end
 
     it "encrypts values with the EJSON v1 format" do

@@ -87,7 +87,6 @@ module EYAML
         if value.is_a?(Hash)
           next [key, traverse(value, &block)]
         end
-        # TODO(es): Add tests for keys with an underscore prefix not doing a nested skip
         if key.start_with?("_")
           next [key, value]
         end

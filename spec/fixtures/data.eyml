@@ -5,3 +5,4 @@ _skip_me: "not_secret"
 _extension: "eyml"
 _dont_skip_me:
   another_secret: "ssshhh"
+  _underscored_secret: "not encrypted"

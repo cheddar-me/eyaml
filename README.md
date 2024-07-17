@@ -169,6 +169,22 @@ If you're using the new Apple M1, you need to ensure that you're using a `ffi` t
 gem "ffi", github: "cheddar-me/ffi", branch: "apple-m1", submodules: true
 ```
 
+### Underscored vs de-underscored keys
+
+Keys that start with an underscore are treated as-is and are assumed unencrypted in the secrets/credentials files.
+To make our lives a little easier in calling them in the application they are callable without the underscore. So a `_secret` can be called with
+
+```ruby
+Rails.application.credentials.secret
+```
+and
+```ruby
+Rails.application.credentials._secret
+```
+
+To prevent conflicts with having the same name underscored and not, we don't allow that and the gem will raise an exception.
+This makes sense since we believe it could be a security hazard to have an encrypted key also unencrypted. The best solution is to give either a different name to make the intention clear.
+
 ## Development
 
 To get started, make sure you have a working version of Ruby locally. Then clone the repo, and run `bin/setup` (this will install `libsodium` if you're on a Mac and setup bundler). Running `bundle exec rake` or `bundle exec rake spec` will run the test suite.
