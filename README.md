@@ -169,7 +169,7 @@ If you're using the new Apple M1, you need to ensure that you're using a `ffi` t
 gem "ffi", github: "cheddar-me/ffi", branch: "apple-m1", submodules: true
 ```
 
-### Underscored vs de-underscored
+### Underscored vs de-underscored keys
 
 Keys that start with an underscore are treated as-is and are assumed unencrypted in the secrets/credentials files.
 To make our lives a little easier in calling them in the application they are callable without the underscore. So a `_secret` can be called with
