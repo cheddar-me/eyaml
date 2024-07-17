@@ -17,6 +17,8 @@ module EYAML
 
           if key.start_with?("_")
             deunderscored_key = key[1..]
+            # We don't want to have an underscored and de-underscored key with the same name, so raise. This could be a security issue
+            raise KeyError, "De-underscored key '#{key[1..]}' already exists." if total.key?(deunderscored_key)
 
             total[deunderscored_key] = value unless total.key?(deunderscored_key)
           end
