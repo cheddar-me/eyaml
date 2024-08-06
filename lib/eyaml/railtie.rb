@@ -12,34 +12,37 @@ module EYAML
       end
 
       config.before_configuration do
-        if File.exist?(Rails.root.join("config", "master.key"))
-          raise ConflictError, "A config/master.key has been found. The rails credentials lookup conflicts with eyaml. Please remove rails credentials management by removing the master.key file to keep using eyaml."
-        end
-        secret_files_present = Dir.glob(auth_files(:secrets)).any?
-        credential_files_present = Dir.glob(auth_files(:credentials)).any?
-
-        secrets_or_credentials = if Rails.version >= "7.2"
-          :credentials
-        else
-          if credential_files_present
-            :credentials
-          elsif secret_files_present
-            :secrets
+        unless ENV.fetch("SECRET_KEY_BASE_DUMMY", false)
+          # Allow rails to run without loading the credentials
+          if File.exist?(Rails.root.join("config", "master.key"))
+            raise ConflictError, "A config/master.key has been found. The rails credentials lookup conflicts with eyaml. Please remove rails credentials management by removing the master.key file to keep using eyaml."
           end
-        end
+          secret_files_present = Dir.glob(auth_files(:secrets)).any?
+          credential_files_present = Dir.glob(auth_files(:credentials)).any?
 
-        auth_files(secrets_or_credentials).each do |file|
-          next unless valid?(file)
+          secrets_or_credentials = if Rails.version >= "7.2"
+            :credentials
+          else
+            if credential_files_present
+              :credentials
+            elsif secret_files_present
+              :secrets
+            end
+          end
 
-          # If private_key is nil (i.e. when $EJSON_PRIVATE_KEY is not set), EYAML will search
-          # for a public/private key in the key directory (either $EJSON_KEYDIR, if set, or /opt/ejson/keys)
-          cipherdata = YAML.load_file(file)
-          secrets = EYAML.decrypt(cipherdata, private_key: ENV[PRIVATE_KEY_ENV_VAR])
-            .except("_public_key")
-          secrets = EYAML::Util.with_deep_deundescored_keys(secrets)
-            .deep_symbolize_keys
+          auth_files(secrets_or_credentials).each do |file|
+            next unless valid?(file)
 
-          break Rails.application.send(secrets_or_credentials).deep_merge!(secrets)
+            # If private_key is nil (i.e. when $EJSON_PRIVATE_KEY is not set), EYAML will search
+            # for a public/private key in the key directory (either $EJSON_KEYDIR, if set, or /opt/ejson/keys)
+            cipherdata = YAML.load_file(file)
+            secrets = EYAML.decrypt(cipherdata, private_key: ENV[PRIVATE_KEY_ENV_VAR])
+              .except("_public_key")
+            secrets = EYAML::Util.with_deep_deundescored_keys(secrets)
+              .deep_symbolize_keys
+
+            break Rails.application.send(secrets_or_credentials).deep_merge!(secrets)
+          end
         end
       end
 
