@@ -16,6 +16,8 @@ RSpec.describe(EYAML::Rails::Railtie) do
     let(:credentials) { credentials_class.new }
 
     before(:each) do
+      ENV.delete("SECRET_KEY_BASE_DUMMY")
+
       FakeFS::FileSystem.clone(fixtures_root)
 
       supported_extensions.each do |ext|
@@ -41,6 +43,12 @@ RSpec.describe(EYAML::Rails::Railtie) do
         if File.exist?(config_root.join("master.key"))
           File.delete(config_root.join("master.key"))
         end
+      end
+
+      it "does not try to load credentials when SECRET_KEY_BASE_DUMMY env var is set" do
+        ENV["SECRET_KEY_BASE_DUMMY"] = "1"
+        expect { run_load_hooks }.not_to raise_error
+        expect(credentials).to(be_empty)
       end
 
       it "raises when a master.key file is present" do
@@ -147,6 +155,8 @@ RSpec.describe(EYAML::Rails::Railtie) do
     let(:secrets) { secrets_class.new }
 
     before(:each) do
+      ENV.delete("SECRET_KEY_BASE_DUMMY")
+
       FakeFS::FileSystem.clone(fixtures_root)
 
       supported_extensions.each do |ext|
@@ -166,6 +176,12 @@ RSpec.describe(EYAML::Rails::Railtie) do
       before do
         allow_rails.to(receive(:root).and_return(fixtures_root))
         allow_rails.to(receive_message_chain("application.secrets").and_return(secrets))
+      end
+
+      it "does not try to load secrets when SECRET_KEY_BASE_DUMMY env var is set" do
+        ENV["SECRET_KEY_BASE_DUMMY"] = "1"
+        expect { run_load_hooks }.not_to raise_error
+        expect(secrets).to(be_empty)
       end
 
       it "merges secrets into application secrets" do
