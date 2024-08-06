@@ -114,6 +114,9 @@ Instead of needing a private key locally, you can provide it to EYAML by setting
 
 If you put your rails master key encrypted in the eyaml file, make sure you don't have another `master.key` file somewhere, since that can interfere.
 
+When setting the SECRET_KEY_BASE_DUMMY environment variable, the secrets/credentials loading will be skipped.
+This can be handy to for example do an asset precompilation step in production where you don't need any secrets/credentials.
+
 ### Example setup
 
 To add encryption + credentials to a rails project do the following things:
