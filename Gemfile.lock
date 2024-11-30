@@ -95,7 +95,7 @@ GEM
       rake (>= 12.2)
       thor (~> 1.0, >= 1.2.2)
       zeitwerk (~> 2.6)
-    rake (13.1.0)
+    rake (13.2.1)
     rbnacl (7.1.1)
       ffi
     rdoc (6.6.2)
